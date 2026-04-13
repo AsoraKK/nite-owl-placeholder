@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nite Owl Angling Supplies</title>
+  <meta name="description" content="Nite Owl Angling Supplies placeholder page." />
+  <style>
+    :root{
+      --bg0:#06142b;
+      --bg1:#0a1f3f;
+      --panel:rgba(255,255,255,.04);
+      --line:rgba(210,228,255,.16);
+      --text:#f4f8ff;
+      --muted:#a8bdd8;
+      --soft:#d8e6fb;
+      --fish:#ffffff;
+      --accent:#dce9ff;
+      --shadow:0 20px 50px rgba(0,0,0,.22);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 12% 12%, rgba(255,255,255,.07), transparent 24%),
+        radial-gradient(circle at 82% 6%, rgba(255,255,255,.05), transparent 16%),
+        linear-gradient(180deg,var(--bg0),var(--bg1));
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .page{
+      min-height:100vh;
+      display:grid;
+      grid-template-rows: 3fr 1fr;
+    }
+
+    .hero{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:clamp(28px, 5vw, 68px);
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent 30%),
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,.04), transparent 25%);
+      pointer-events:none;
+    }
+
+    .hero-inner{
+      position:relative;
+      z-index:1;
+      max-width:980px;
+    }
+
+    .eyebrow{
+      margin:0 0 18px;
+      font-size:.78rem;
+      line-height:1;
+      letter-spacing:.24em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(2.5rem, 6vw, 5.5rem);
+      line-height:.94;
+      letter-spacing:-.06em;
+      font-weight:800;
+      text-wrap:balance;
+    }
+
+    .line-2{
+      margin:18px 0 0;
+      font-size:clamp(1.1rem, 1.4vw, 1.45rem);
+      line-height:1.5;
+      color:var(--soft);
+      text-wrap:balance;
+    }
+
+    .subtext{
+      margin:14px 0 0;
+      font-size:.95rem;
+      line-height:1.5;
+      color:var(--muted);
+    }
+
+    .runner{
+      position:relative;
+      border-top:1px solid rgba(255,255,255,.08);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015)),
+        rgba(0,0,0,.08);
+      overflow:hidden;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+    }
+
+    .hud{
+      position:absolute;
+      inset:0 0 auto 0;
+      padding:16px 18px 0;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      pointer-events:none;
+      z-index:5;
+      font:700 13px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing:.04em;
+      color:var(--muted);
+      user-select:none;
+    }
+
+    .hud .score{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .hud .hint{
+      color:rgba(216,230,251,.78);
+      opacity:.8;
+    }
+
+    .stage{
+      position:absolute;
+      inset:0;
+      overflow:hidden;
+      touch-action:manipulation;
+    }
+
+    .surface,
+    .ground{
+      position:absolute;
+      left:0;
+      right:0;
+      height:1px;
+      background:var(--line);
+      z-index:1;
+    }
+
+    .surface{ top:14px; opacity:.85; }
+    .ground{ bottom:18px; opacity:.9; }
+
+    .surface::before{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      top:-7px;
+      height:7px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), transparent);
+    }
+
+    .fish,
+    .obstacle,
+    .overlay{
+      position:absolute;
+      left:0;
+      top:0;
+      will-change:transform;
+    }
+
+    .fish{
+      width:54px;
+      height:28px;
+      z-index:3;
+      filter:drop-shadow(0 8px 14px rgba(0,0,0,.18));
+    }
+
+    .fish .tail{
+      position:absolute;
+      left:0;
+      top:8px;
+      width:16px;
+      height:12px;
+      background:var(--fish);
+      clip-path:polygon(100% 50%, 0 0, 0 100%);
+      transform-origin:right center;
+      animation:tail 180ms ease-in-out infinite alternate;
+    }
+
+    .fish .body{
+      position:absolute;
+      left:11px;
+      top:6px;
+      width:30px;
+      height:16px;
+      border-radius:999px;
+      background:var(--fish);
+    }
+
+    .fish .fin{
+      position:absolute;
+      left:21px;
+      top:2px;
+      width:10px;
+      height:8px;
+      background:var(--fish);
+      clip-path:polygon(0 100%, 50% 0, 100% 100%);
+    }
+
+    .fish .eye{
+      position:absolute;
+      left:36px;
+      top:12px;
+      width:4px;
+      height:4px;
+      border-radius:50%;
+      background:#0a1f3f;
+    }
+
+    @keyframes tail{
+      from{transform:rotate(-10deg)}
+      to{transform:rotate(12deg)}
+    }
+
+    .obstacle{
+      z-index:2;
+      filter:drop-shadow(0 8px 12px rgba(0,0,0,.16));
+    }
+
+    .hook{
+      width:26px;
+      height:44px;
+    }
+
+    .hook .shank{
+      position:absolute;
+      left:11px;
+      top:0;
+      width:2px;
+      height:28px;
+      background:rgba(220,233,255,.44);
+    }
+
+    .hook .curve{
+      position:absolute;
+      left:5px;
+      top:18px;
+      width:14px;
+      height:18px;
+      border-right:3px solid var(--accent);
+      border-bottom:3px solid var(--accent);
+      border-radius:0 0 10px 0;
+    }
+
+    .hook .tip{
+      position:absolute;
+      left:16px;
+      top:30px;
+      width:8px;
+      height:3px;
+      background:var(--accent);
+      border-radius:999px;
+      transform:rotate(18deg);
+    }
+
+    .net{
+      width:50px;
+      height:52px;
+    }
+
+    .net .rope{
+      position:absolute;
+      left:24px;
+      top:-30px;
+      width:2px;
+      height:34px;
+      background:rgba(220,233,255,.34);
+    }
+
+    .net .frame{
+      position:absolute;
+      inset:0;
+      border:2px solid var(--accent);
+      border-radius:11px;
+      background:
+        linear-gradient(90deg, transparent 28%, rgba(220,233,255,.14) 28%, rgba(220,233,255,.14) 32%, transparent 32%, transparent 50%, rgba(220,233,255,.14) 50%, rgba(220,233,255,.14) 54%, transparent 54%, transparent 72%, rgba(220,233,255,.14) 72%, rgba(220,233,255,.14) 76%, transparent 76%),
+        linear-gradient(180deg, transparent 28%, rgba(220,233,255,.14) 28%, rgba(220,233,255,.14) 32%, transparent 32%, transparent 50%, rgba(220,233,255,.14) 50%, rgba(220,233,255,.14) 54%, transparent 54%, transparent 72%, rgba(220,233,255,.14) 72%, rgba(220,233,255,.14) 76%, transparent 76%);
+      opacity:.95;
+    }
+
+    .overlay{
+      left:50%;
+      top:50%;
+      z-index:6;
+      transform:translate(-50%, -50%);
+      text-align:center;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity .12s ease;
+    }
+
+    .overlay.is-visible{
+      opacity:1;
+    }
+
+    .overlay .title{
+      font:800 clamp(.98rem, 1.1vw, 1.15rem)/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color:var(--soft);
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .overlay .sub{
+      margin-top:10px;
+      font:700 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color:rgba(216,230,251,.72);
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+
+    .flash{
+      position:absolute;
+      inset:0;
+      background:rgba(255,255,255,.1);
+      opacity:0;
+      pointer-events:none;
+      z-index:4;
+    }
+
+    .flash.is-on{
+      animation:flash .16s ease-out 1;
+    }
+
+    @keyframes flash{
+      from{opacity:.32}
+      to{opacity:0}
+    }
+
+    @media (max-width: 720px){
+      .page{grid-template-rows: 2.55fr 1fr;}
+      .hero{padding:24px 18px;}
+      .eyebrow{margin-bottom:14px;}
+      .line-2{margin-top:16px;}
+      .hud{padding:12px 12px 0; font-size:12px;}
+      .surface{top:12px;}
+      .ground{bottom:16px;}
+      .fish{width:50px;height:26px;}
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .fish .tail,
+      .flash.is-on{
+        animation:none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero" aria-label="Nite Owl Angling Supplies placeholder">
+      <div class="hero-inner">
+        <p class="eyebrow">Nite Owl Angling Supplies</p>
+        <h1>Nite Owl Angling Supplies.</h1>
+        <p class="line-2">We hooked something big. Still landing it.</p>
+        <p class="subtext">We&apos;re building the full site.</p>
+      </div>
+    </section>
+
+    <section class="runner" aria-label="Minimal fish runner game">
+      <div class="hud" aria-hidden="true">
+        <div class="score">
+          <span id="distance">0m</span>
+          <span id="best">Best 0m</span>
+        </div>
+        <div class="hint">Press Space</div>
+      </div>
+
+      <div class="stage" id="stage" tabindex="0" aria-label="Play area">
+        <div class="surface"></div>
+        <div class="ground"></div>
+        <div class="flash" id="flash"></div>
+        <div class="overlay" id="overlay" aria-live="polite">
+          <div class="title" id="overlayTitle">Owl attack</div>
+          <div class="sub">Press Space</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const stage = document.getElementById('stage');
+      const distanceEl = document.getElementById('distance');
+      const bestEl = document.getElementById('best');
+      const overlay = document.getElementById('overlay');
+      const overlayTitle = document.getElementById('overlayTitle');
+      const flash = document.getElementById('flash');
+
+      const STORE_KEY = 'nite_owl_best_m';
+      const FISH_X = 92;
+      const FISH_W = 54;
+      const FISH_H = 28;
+      const GROUND_GAP = 18;
+      const SURFACE_GAP = 14;
+      const GRAVITY = 1560;
+      const JUMP_VELOCITY = -540;
+      const SPEED_START = 250;
+      const SPEED_MAX = 430;
+      const SPEED_RAMP = 7.5;
+      const SPAWN_MIN = 1.05;
+      const SPAWN_MAX = 1.55;
+
+      const fish = makeFish();
+      stage.appendChild(fish);
+
+      const state = {
+        running: false,
+        gameOver: false,
+        width: 0,
+        height: 0,
+        groundY: 0,
+        surfaceY: 0,
+        fishY: 0,
+        fishVY: 0,
+        speed: SPEED_START,
+        distance: 0,
+        best: readBest(),
+        spawnIn: 0.9,
+        obstacles: [],
+        lastTime: 0
+      };
+
+      const fishBox = { x: FISH_X + 7, y: 0, w: FISH_W - 16, h: FISH_H - 8 };
+
+      function makeFish(){
+        const el = document.createElement('div');
+        el.className = 'fish';
+        el.innerHTML = '<div class="tail"></div><div class="body"></div><div class="fin"></div><div class="eye"></div>';
+        return el;
+      }
+
+      function readBest(){
+        try {
+          return Number(localStorage.getItem(STORE_KEY) || 0);
+        } catch {
+          return 0;
+        }
+      }
+
+      function writeBest(value){
+        try {
+          localStorage.setItem(STORE_KEY, String(value));
+        } catch {
+          void 0;
+        }
+      }
+
+      function padDistance(value){
+        return `${Math.max(0, Math.floor(value))}m`;
+      }
+
+      function resize(){
+        const rect = stage.getBoundingClientRect();
+        state.width = rect.width;
+        state.height = rect.height;
+        state.groundY = state.height - GROUND_GAP;
+        state.surfaceY = SURFACE_GAP;
+
+        if (!state.running && !state.gameOver) {
+          state.fishY = state.groundY - FISH_H;
+          drawFish();
+        }
+      }
+
+      function drawFish(){
+        fish.style.transform = `translate3d(${FISH_X}px, ${state.fishY}px, 0)`;
+      }
+
+      function clearObstacles(){
+        for (const obstacle of state.obstacles) {
+          obstacle.el.remove();
+        }
+        state.obstacles.length = 0;
+      }
+
+      function makeHook(){
+        const el = document.createElement('div');
+        el.className = 'obstacle hook';
+        el.innerHTML = '<div class="shank"></div><div class="curve"></div><div class="tip"></div>';
+        return { kind: 'hook', x: state.width + 40, w: 26, h: 44, y: state.groundY - 44, el };
+      }
+
+      function makeNet(){
+        const el = document.createElement('div');
+        el.className = 'obstacle net';
+        el.innerHTML = '<div class="rope"></div><div class="frame"></div>';
+        return { kind: 'net', x: state.width + 44, w: 50, h: 52, y: state.groundY - 52, el };
+      }
+
+      function spawnObstacle(){
+        const obstacle = Math.random() < 0.33 ? makeNet() : makeHook();
+        obstacle.el.style.transform = `translate3d(${obstacle.x}px, ${obstacle.y}px, 0)`;
+        stage.appendChild(obstacle.el);
+        state.obstacles.push(obstacle);
+      }
+
+      function setOverlay(visible, title){
+        overlay.classList.toggle('is-visible', visible);
+        overlayTitle.textContent = title;
+      }
+
+      function reset(){
+        state.running = true;
+        state.gameOver = false;
+        state.speed = SPEED_START;
+        state.distance = 0;
+        state.spawnIn = 0.9;
+        state.fishVY = JUMP_VELOCITY;
+        state.fishY = state.groundY - FISH_H;
+        state.lastTime = 0;
+        clearObstacles();
+        setOverlay(false, 'Owl attack');
+        distanceEl.textContent = padDistance(0);
+        bestEl.textContent = `Best ${padDistance(state.best).slice(0, -1)}m`;
+        drawFish();
+      }
+
+      function gameOver(reason){
+        if (state.gameOver) return;
+        state.running = false;
+        state.gameOver = true;
+        state.best = Math.max(state.best, Math.floor(state.distance));
+        writeBest(state.best);
+        bestEl.textContent = `Best ${padDistance(state.best).slice(0, -1)}m`;
+        flash.classList.remove('is-on');
+        void flash.offsetWidth;
+        flash.classList.add('is-on');
+        setOverlay(true, reason);
+      }
+
+      function jump(){
+        if (!state.running || state.gameOver) {
+          reset();
+          return;
+        }
+        state.fishVY = JUMP_VELOCITY;
+      }
+
+      function updateFish(dt){
+        state.fishVY += GRAVITY * dt;
+        state.fishY += state.fishVY * dt;
+
+        if (state.fishY + FISH_H >= state.groundY) {
+          state.fishY = state.groundY - FISH_H;
+          state.fishVY = 0;
+        }
+
+        if (state.fishY <= state.surfaceY) {
+          state.fishY = state.surfaceY;
+          drawFish();
+          gameOver('Owl attack');
+          return;
+        }
+
+        drawFish();
+      }
+
+      function updateObstacles(dt){
+        state.spawnIn -= dt;
+        if (state.spawnIn <= 0) {
+          spawnObstacle();
+          const t = Math.min(1, (state.speed - SPEED_START) / (SPEED_MAX - SPEED_START));
+          state.spawnIn = SPAWN_MAX - t * 0.26 - Math.random() * 0.18;
+          state.spawnIn = Math.max(SPAWN_MIN, state.spawnIn);
+        }
+
+        const fishRect = {
+          x: FISH_X + 10,
+          y: state.fishY + 4,
+          w: FISH_W - 18,
+          h: FISH_H - 8
+        };
+
+        for (let i = state.obstacles.length - 1; i >= 0; i--) {
+          const obstacle = state.obstacles[i];
+          obstacle.x -= state.speed * dt;
+          obstacle.el.style.transform = `translate3d(${obstacle.x}px, ${obstacle.y}px, 0)`;
+
+          const obstacleRect = {
+            x: obstacle.x + 2,
+            y: obstacle.y + 2,
+            w: obstacle.w - 4,
+            h: obstacle.h - 4
+          };
+
+          const hit =
+            fishRect.x < obstacleRect.x + obstacleRect.w &&
+            fishRect.x + fishRect.w > obstacleRect.x &&
+            fishRect.y < obstacleRect.y + obstacleRect.h &&
+            fishRect.y + fishRect.h > obstacleRect.y;
+
+          if (hit) {
+            gameOver('Caught');
+            return;
+          }
+
+          if (obstacle.x + obstacle.w < -80) {
+            obstacle.el.remove();
+            state.obstacles.splice(i, 1);
+          }
+        }
+      }
+
+      function updateScore(dt){
+        const bonus = state.speed / SPEED_START;
+        state.distance += dt * 15 * bonus;
+        const current = Math.floor(state.distance);
+        distanceEl.textContent = padDistance(current);
+        if (current > state.best) {
+          bestEl.textContent = `Best ${padDistance(current).slice(0, -1)}m`;
+        } else {
+          bestEl.textContent = `Best ${padDistance(state.best).slice(0, -1)}m`;
+        }
+      }
+
+      function tick(now){
+        if (!state.lastTime) {
+          state.lastTime = now;
+        }
+        const dt = Math.min((now - state.lastTime) / 1000, 0.032);
+        state.lastTime = now;
+
+        if (state.running && !state.gameOver) {
+          state.speed = Math.min(SPEED_MAX, state.speed + SPEED_RAMP * dt);
+          updateFish(dt);
+          updateObstacles(dt);
+          updateScore(dt);
+        }
+
+        requestAnimationFrame(tick);
+      }
+
+      stage.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
+        jump();
+      });
+
+      window.addEventListener('keydown', (event) => {
+        if (event.code === 'Space') {
+          event.preventDefault();
+          jump();
+        }
+      });
+
+      window.addEventListener('resize', resize);
+
+      resize();
+      state.best = readBest();
+      bestEl.textContent = `Best ${padDistance(state.best).slice(0, -1)}m`;
+      setOverlay(false, 'Owl attack');
+      requestAnimationFrame(tick);
+    })();
+  </script>
+</body>
+</html>
