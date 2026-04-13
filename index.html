@@ -458,7 +458,7 @@
         }
       }
 
-      function padDistance(value){
+      function formatMeters(value){
         return `${Math.max(0, Math.floor(value))}m`;
       }
 
@@ -523,8 +523,8 @@
         state.lastTime = 0;
         clearObstacles();
         setOverlay(false, 'Owl attack');
-        distanceEl.textContent = padDistance(0);
-        bestEl.textContent = `Best ${padDistance(state.best).slice(0, -1)}m`;
+        distanceEl.textContent = formatMeters(0);
+        bestEl.textContent = `Best ${formatMeters(state.best)}`;
         drawFish();
       }
 
@@ -534,7 +534,7 @@
         state.gameOver = true;
         state.best = Math.max(state.best, Math.floor(state.distance));
         writeBest(state.best);
-        bestEl.textContent = `Best ${padDistance(state.best).slice(0, -1)}m`;
+        bestEl.textContent = `Best ${formatMeters(state.best)}`;
         flash.classList.remove('is-on');
         void flash.offsetWidth;
         flash.classList.add('is-on');
@@ -618,11 +618,11 @@
         const bonus = state.speed / SPEED_START;
         state.distance += dt * 15 * bonus;
         const current = Math.floor(state.distance);
-        distanceEl.textContent = padDistance(current);
+        distanceEl.textContent = formatMeters(current);
         if (current > state.best) {
-          bestEl.textContent = `Best ${padDistance(current).slice(0, -1)}m`;
+          bestEl.textContent = `Best ${formatMeters(current)}`;
         } else {
-          bestEl.textContent = `Best ${padDistance(state.best).slice(0, -1)}m`;
+          bestEl.textContent = `Best ${formatMeters(state.best)}`;
         }
       }
 
@@ -636,8 +636,12 @@
         if (state.running && !state.gameOver) {
           state.speed = Math.min(SPEED_MAX, state.speed + SPEED_RAMP * dt);
           updateFish(dt);
-          updateObstacles(dt);
-          updateScore(dt);
+          if (!state.gameOver) {
+            updateObstacles(dt);
+          }
+          if (!state.gameOver) {
+            updateScore(dt);
+          }
         }
 
         requestAnimationFrame(tick);
@@ -659,7 +663,7 @@
 
       resize();
       state.best = readBest();
-      bestEl.textContent = `Best ${padDistance(state.best).slice(0, -1)}m`;
+      bestEl.textContent = `Best ${formatMeters(state.best)}`;
       setOverlay(false, 'Owl attack');
       requestAnimationFrame(tick);
     })();
