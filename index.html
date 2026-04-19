@@ -7,128 +7,509 @@
   <meta name="description" content="Nite Owl Angling Supplies placeholder page." />
   <style>
     :root{
-      --bg0:#030c1d;
-      --bg1:#071b37;
-      --bg2:#0c2a52;
-      --line:rgba(214,228,252,.2);
-      --text:#eff5ff;
-      --soft:#cddcf4;
-      --muted:#9fb4d5;
-      --accent:#7fd3ff;
-      --glow:0 24px 70px rgba(0,0,0,.35);
+      --bg-0:#06142b;
+      --bg-1:#0a1f3f;
+      --ink:#f0f5ff;
+      --muted:#b2c3dd;
+      --line:rgba(210,226,249,.26);
+      --line-soft:rgba(210,226,249,.12);
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      color:var(--text);
+      color:var(--ink);
       background:
-        radial-gradient(circle at 10% 14%, rgba(255,255,255,.08), transparent 26%),
-        radial-gradient(circle at 88% 4%, rgba(127,211,255,.15), transparent 22%),
-        linear-gradient(160deg, var(--bg0) 0%, var(--bg1) 42%, var(--bg2) 100%);
-      font-family:"Avenir Next","Segoe UI","Helvetica Neue",sans-serif;
+        radial-gradient(circle at 16% 8%, rgba(255,255,255,.05), transparent 24%),
+        linear-gradient(180deg, var(--bg-0), var(--bg-1));
+      font-family:"Avenir Next","Segoe UI","Helvetica Neue",Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+
+    .page{
+      min-height:100vh;
       display:grid;
-      place-items:center;
+      grid-template-rows:minmax(0, 3fr) minmax(132px, 1fr);
+    }
+
+    .hero{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:clamp(36px, 7vw, 88px) 24px;
+      text-align:center;
+    }
+
+    .hero-copy{
+      width:min(760px, 100%);
+    }
+
+    .brand{
+      margin:0;
+      color:var(--muted);
+      font-size:clamp(.88rem, .8rem + .24vw, 1rem);
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      font-weight:600;
+    }
+
+    .headline{
+      margin:22px 0 0;
+      font-family:"Iowan Old Style","Palatino Linotype","Book Antiqua",Georgia,serif;
+      font-size:clamp(2rem, 1.3rem + 2.2vw, 3.8rem);
+      line-height:1.06;
+      letter-spacing:-.015em;
+      max-width:18ch;
+      margin-left:auto;
+      margin-right:auto;
+      text-wrap:balance;
+      font-weight:600;
+    }
+
+    .subline{
+      margin:18px auto 0;
+      max-width:36ch;
+      font-size:clamp(.95rem, .88rem + .22vw, 1.12rem);
+      line-height:1.55;
+      color:var(--muted);
+      text-wrap:balance;
+    }
+
+    .runner{
+      position:relative;
+      border-top:1px solid var(--line-soft);
+      background:linear-gradient(180deg, rgba(4,12,24,.42), rgba(4,10,20,.6));
       overflow:hidden;
     }
 
-    .grain{
-      position:fixed;
-      inset:0;
+    .hud{
+      position:absolute;
+      inset:10px 14px auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      z-index:4;
       pointer-events:none;
-      opacity:.22;
-      background-image:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,.06) 0 1px, transparent 1px),
-        radial-gradient(circle at 75% 62%, rgba(255,255,255,.05) 0 1px, transparent 1px);
-      background-size: 4px 4px, 6px 6px;
-      mix-blend-mode:screen;
-    }
-
-    .shell{
-      width:min(980px, 92vw);
-      padding:clamp(28px,5vw,56px);
-      text-align:center;
-      border:1px solid var(--line);
-      border-radius:28px;
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-      box-shadow:var(--glow);
-      backdrop-filter:blur(8px);
-      animation:rise .6s ease-out both;
-    }
-
-    h1{
-      margin:0;
-      font-family:"Archivo Black","Arial Black",sans-serif;
-      font-size:clamp(2.5rem,8vw,6.1rem);
-      line-height:.94;
-      letter-spacing:-.04em;
-      text-wrap:balance;
-    }
-
-    .line-2{
-      margin:20px auto 0;
-      max-width:34ch;
-      font-size:clamp(1.08rem,2.2vw,1.6rem);
-      line-height:1.45;
-      color:var(--soft);
-      text-wrap:balance;
-    }
-
-    .subtext{
-      margin:14px 0 0;
-      font-size:clamp(.92rem,1.2vw,1.05rem);
+      user-select:none;
+      font:600 12px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing:.04em;
       color:var(--muted);
-      letter-spacing:.03em;
     }
 
-    .wave{
-      position:fixed;
-      left:-10%;
-      right:-10%;
-      bottom:-8vh;
-      height:34vh;
+    .hint{
+      opacity:.8;
+    }
+
+    .stage{
+      position:absolute;
+      inset:0;
+      overflow:hidden;
+      touch-action:manipulation;
+    }
+
+    .game-canvas{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+    }
+
+    .overlay{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%, -50%);
+      z-index:3;
+      text-align:center;
       pointer-events:none;
-      background:
-        radial-gradient(150% 100% at 50% 90%, rgba(127,211,255,.3), transparent 60%),
-        repeating-linear-gradient(
-          0deg,
-          rgba(127,211,255,.18) 0 1px,
-          transparent 1px 12px
-        );
-      mask-image: radial-gradient(120% 90% at 50% 90%, #000 70%, transparent 100%);
-      opacity:.5;
-      animation:drift 9s linear infinite;
+      opacity:0;
+      transition:opacity .14s ease;
     }
 
-    @keyframes rise{
-      from{opacity:0; transform:translateY(16px)}
-      to{opacity:1; transform:translateY(0)}
+    .overlay.visible{
+      opacity:1;
     }
 
-    @keyframes drift{
-      from{transform:translateX(0)}
-      to{transform:translateX(-36px)}
+    .overlay .title{
+      margin:0;
+      font:600 12px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing:.12em;
+      color:rgba(240,245,255,.88);
+      text-transform:uppercase;
     }
 
-    @media (max-width: 640px){
-      .shell{
-        border-radius:20px;
-        padding:24px 18px 28px;
+    @media (max-width: 760px){
+      .page{
+        grid-template-rows:minmax(0, 3fr) minmax(116px, 1fr);
       }
-      .line-2{
-        margin-top:16px;
+      .hero{
+        padding:32px 18px 40px;
+      }
+      .headline{
+        margin-top:18px;
+      }
+      .subline{
+        margin-top:15px;
+      }
+      .hud{
+        inset:8px 10px auto;
+        font-size:11px;
       }
     }
   </style>
 </head>
 <body>
-  <main class="shell" aria-label="Nite Owl Angling Supplies placeholder">
-    <h1>Nite Owl Angling Supplies.</h1>
-    <p class="line-2">We hooked something big! The website will soon be live.</p>
-    <p class="subtext">We&apos;re building the full site.</p>
+  <main class="page">
+    <section class="hero" aria-label="Nite Owl Angling Supplies placeholder">
+      <div class="hero-copy">
+        <p class="brand">Nite Owl Angling Supplies</p>
+        <h1 class="headline">We hooked something big. Still landing it.</h1>
+        <p class="subline">The full site is on the way.</p>
+      </div>
+    </section>
+
+    <section class="runner" aria-label="Fish runner game">
+      <div class="hud" aria-hidden="true">
+        <div id="score">0m</div>
+        <div id="best">Best 0m</div>
+        <div class="hint">Press Space</div>
+      </div>
+      <div class="stage" id="stage">
+        <canvas class="game-canvas" id="gameCanvas"></canvas>
+        <div class="overlay visible" id="overlay">
+          <p class="title" id="overlayText">Press Space</p>
+        </div>
+      </div>
+    </section>
   </main>
-  <div class="wave" aria-hidden="true"></div>
-  <div class="grain" aria-hidden="true"></div>
+
+  <script>
+    (() => {
+      const stage = document.getElementById('stage');
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+      const scoreEl = document.getElementById('score');
+      const bestEl = document.getElementById('best');
+      const overlay = document.getElementById('overlay');
+      const overlayText = document.getElementById('overlayText');
+
+      const STORE_KEY = 'niteowl_runner_best';
+      const FISH_X = 78;
+      const FISH_W = 34;
+      const FISH_H = 16;
+      const SURFACE_Y = 18;
+      const GROUND_MARGIN = 20;
+      const GRAVITY = 1760;
+      const JUMP_FORCE = -560;
+      const BASE_SPEED = 220;
+      const MAX_SPEED = 420;
+      const SPEED_RAMP = 7;
+      const SPAWN_MIN = 0.9;
+      const SPAWN_MAX = 1.5;
+
+      const state = {
+        running: false,
+        gameOver: false,
+        width: 0,
+        height: 0,
+        fishY: 0,
+        fishV: 0,
+        groundY: 0,
+        speed: BASE_SPEED,
+        distance: 0,
+        best: readBest(),
+        spawnIn: 1.0,
+        obstacles: [],
+        trackOffset: 0,
+        lastT: 0
+      };
+
+      function readBest(){
+        try {
+          return Number(localStorage.getItem(STORE_KEY) || 0);
+        } catch {
+          return 0;
+        }
+      }
+
+      function writeBest(value){
+        try {
+          localStorage.setItem(STORE_KEY, String(value));
+        } catch {
+          void 0;
+        }
+      }
+
+      function meters(value){
+        return `${Math.max(0, Math.floor(value))}m`;
+      }
+
+      function showOverlay(show, text){
+        overlay.classList.toggle('visible', show);
+        overlayText.textContent = text;
+      }
+
+      function resize(){
+        const rect = stage.getBoundingClientRect();
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        state.width = rect.width;
+        state.height = rect.height;
+        state.groundY = state.height - GROUND_MARGIN;
+
+        canvas.width = Math.max(1, Math.round(rect.width * dpr));
+        canvas.height = Math.max(1, Math.round(rect.height * dpr));
+        canvas.style.width = `${rect.width}px`;
+        canvas.style.height = `${rect.height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.imageSmoothingEnabled = false;
+
+        if (!state.running && !state.gameOver) {
+          state.fishY = state.groundY - FISH_H;
+        }
+      }
+
+      function resetGame(){
+        state.running = true;
+        state.gameOver = false;
+        state.speed = BASE_SPEED;
+        state.distance = 0;
+        state.spawnIn = 0.86;
+        state.fishV = 0;
+        state.fishY = state.groundY - FISH_H;
+        state.trackOffset = 0;
+        state.obstacles.length = 0;
+        state.lastT = 0;
+        scoreEl.textContent = meters(0);
+        bestEl.textContent = `Best ${meters(state.best)}`;
+        showOverlay(false, 'Press Space');
+      }
+
+      function endGame(reason){
+        if (state.gameOver) return;
+        state.running = false;
+        state.gameOver = true;
+        state.best = Math.max(state.best, Math.floor(state.distance));
+        writeBest(state.best);
+        bestEl.textContent = `Best ${meters(state.best)}`;
+        showOverlay(true, reason);
+      }
+
+      function tryJump(){
+        if (!state.running || state.gameOver) {
+          resetGame();
+          return;
+        }
+        const grounded = state.fishY >= state.groundY - FISH_H - 1;
+        if (grounded) {
+          state.fishV = JUMP_FORCE;
+        }
+      }
+
+      function spawnObstacle(){
+        const useNet = Math.random() < 0.35;
+        const obstacle = useNet
+          ? { kind:'net', x: state.width + 40, w: 42, h: 48 }
+          : { kind:'hook', x: state.width + 30, w: 22, h: 34 };
+        obstacle.y = state.groundY - obstacle.h;
+        state.obstacles.push(obstacle);
+      }
+
+      function intersects(a, b){
+        return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+      }
+
+      function update(dt){
+        state.speed = Math.min(MAX_SPEED, state.speed + SPEED_RAMP * dt);
+        state.trackOffset += state.speed * dt;
+
+        state.fishV += GRAVITY * dt;
+        state.fishY += state.fishV * dt;
+
+        if (state.fishY + FISH_H >= state.groundY) {
+          state.fishY = state.groundY - FISH_H;
+          state.fishV = 0;
+        }
+
+        if (state.fishY <= SURFACE_Y) {
+          state.fishY = SURFACE_Y;
+          endGame('Owl attack');
+          return;
+        }
+
+        state.spawnIn -= dt;
+        if (state.spawnIn <= 0) {
+          spawnObstacle();
+          const speedFactor = (state.speed - BASE_SPEED) / (MAX_SPEED - BASE_SPEED);
+          state.spawnIn = SPAWN_MAX - speedFactor * 0.35 - Math.random() * 0.18;
+          state.spawnIn = Math.max(SPAWN_MIN, state.spawnIn);
+        }
+
+        const fishBox = {
+          x: FISH_X + 4,
+          y: state.fishY + 2,
+          w: FISH_W - 8,
+          h: FISH_H - 4
+        };
+
+        for (let i = state.obstacles.length - 1; i >= 0; i--) {
+          const obstacle = state.obstacles[i];
+          obstacle.x -= state.speed * dt;
+          const obstacleBox = {
+            x: obstacle.x + 1,
+            y: obstacle.y + 1,
+            w: obstacle.w - 2,
+            h: obstacle.h - 2
+          };
+
+          if (intersects(fishBox, obstacleBox)) {
+            endGame('Caught');
+            return;
+          }
+
+          if (obstacle.x + obstacle.w < -40) {
+            state.obstacles.splice(i, 1);
+          }
+        }
+
+        state.distance += dt * 13 * (state.speed / BASE_SPEED);
+        const current = Math.floor(state.distance);
+        scoreEl.textContent = meters(current);
+        bestEl.textContent = `Best ${meters(Math.max(current, state.best))}`;
+      }
+
+      function drawFish(){
+        ctx.save();
+        ctx.translate(FISH_X, state.fishY);
+        ctx.fillStyle = '#f5f9ff';
+        ctx.beginPath();
+        ctx.moveTo(0, 8);
+        ctx.lineTo(9, 3);
+        ctx.lineTo(9, 13);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillRect(8, 4, 22, 10);
+        ctx.beginPath();
+        ctx.moveTo(18, 4);
+        ctx.lineTo(24, 1);
+        ctx.lineTo(27, 4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#0b1e3b';
+        ctx.fillRect(26, 7, 2, 2);
+        ctx.restore();
+      }
+
+      function drawHook(obstacle){
+        const x = obstacle.x;
+        const y = obstacle.y;
+        ctx.strokeStyle = 'rgba(241,247,255,.92)';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(x + 11, y - 16);
+        ctx.lineTo(x + 11, y + 7);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(x + 11, y + 14, 8, Math.PI * 0.15, Math.PI * 1.65);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x + 15, y + 24);
+        ctx.lineTo(x + 19, y + 21);
+        ctx.stroke();
+      }
+
+      function drawNet(obstacle){
+        const x = obstacle.x;
+        const y = obstacle.y;
+        ctx.strokeStyle = 'rgba(241,247,255,.88)';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(x + obstacle.w / 2, y - 18);
+        ctx.lineTo(x + obstacle.w / 2, y);
+        ctx.stroke();
+        ctx.strokeRect(x + 2, y + 8, obstacle.w - 4, obstacle.h - 8);
+        for (let i = 1; i < 3; i++) {
+          const xx = x + 2 + ((obstacle.w - 4) / 3) * i;
+          ctx.beginPath();
+          ctx.moveTo(xx, y + 8);
+          ctx.lineTo(xx, y + obstacle.h);
+          ctx.stroke();
+        }
+      }
+
+      function drawScene(){
+        ctx.clearRect(0, 0, state.width, state.height);
+
+        const surface = SURFACE_Y;
+        const ground = state.groundY;
+
+        ctx.strokeStyle = 'rgba(212,226,248,.24)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, surface);
+        ctx.lineTo(state.width, surface);
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(212,226,248,.28)';
+        ctx.beginPath();
+        ctx.moveTo(0, ground);
+        ctx.lineTo(state.width, ground);
+        ctx.stroke();
+
+        const dashStep = 22;
+        const offset = state.trackOffset % dashStep;
+        ctx.strokeStyle = 'rgba(212,226,248,.2)';
+        for (let x = -offset; x < state.width + dashStep; x += dashStep) {
+          ctx.beginPath();
+          ctx.moveTo(x, ground + 6);
+          ctx.lineTo(x + 10, ground + 6);
+          ctx.stroke();
+        }
+
+        for (const obstacle of state.obstacles) {
+          if (obstacle.kind === 'net') {
+            drawNet(obstacle);
+          } else {
+            drawHook(obstacle);
+          }
+        }
+
+        drawFish();
+      }
+
+      function tick(time){
+        if (!state.lastT) state.lastT = time;
+        const dt = Math.min((time - state.lastT) / 1000, 0.032);
+        state.lastT = time;
+
+        if (state.running && !state.gameOver) {
+          update(dt);
+        }
+
+        drawScene();
+        requestAnimationFrame(tick);
+      }
+
+      window.addEventListener('resize', resize);
+      window.addEventListener('keydown', (event) => {
+        if (event.code === 'Space') {
+          event.preventDefault();
+          tryJump();
+        }
+      });
+      stage.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
+        tryJump();
+      });
+
+      resize();
+      bestEl.textContent = `Best ${meters(state.best)}`;
+      showOverlay(true, 'Press Space');
+      requestAnimationFrame(tick);
+    })();
+  </script>
 </body>
 </html>

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /checkout-test
+Disallow: /cart-test
+
+Sitemap: https://niteowlangling.co.za/sitemap.xml
